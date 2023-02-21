@@ -1,10 +1,4 @@
-
-
-
-
-
 /*-------------------------------- Constants --------------------------------*/
-
 const winningCombos = [
   [0, 1, 2],
   [3, 4, 5],
@@ -14,170 +8,93 @@ const winningCombos = [
   [2, 5, 8],
   [0, 4, 8],
   [2, 4, 6]
-
 ]
 
-
-
-
 /*---------------------------- Variables (state) ----------------------------*/
-
 let board: number[], turn: number, winner: boolean, tie: boolean
 
 
 /*------------------------ Cached Element References ------------------------*/
-
 const squareEls = document.querySelectorAll('.sqr')
-
-const messageEl = document.getElementById('#message')
-
-const resetBtnEl = document.querySelector('Btn')!
+const messageEl = document.getElementById('message')
+const resetBtnEl = document.querySelector('button')!
 
 /*----------------------------- Event Listeners -----------------------------*/
-
-
 document.querySelector('.board')!.addEventListener('click', handleClick)
 resetBtnEl.addEventListener('click', init)
-
-
 /*-------------------------------- Functions --------------------------------*/
 
 init()
 
 function init() {
-  board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
   turn = 1
   winner = false
   tie = false
   render()
- 
 }
-
 
 function render() {
   updateBoard()
   updateMessage()
-
 }
 
-
-
-
 function updateBoard() {
-  board.forEach((element, idx) => {
-      if (element === 1) {
-          squareEls[idx].textContent = "X"
-      } else if (element === -1) {
-          squareEls[idx].textContent = "O"
-      } else {
-          squareEls[idx].textContent = ""
-      }
+  board.forEach((boardVal, idx) => {
+    if (boardVal === 1) {
+      squareEls[idx].textContent = 'X'
+    } else if (boardVal === -1) {
+      squareEls[idx].textContent = 'O'
+    } else {
+      squareEls[idx].textContent = ''
+    }
   })
 }
 
-
-
 function updateMessage() {
-  if (winner === false && tie === false) {
-
-      if (turn === 1) {
-          messageEl.textContent = "X's" + " turn"
-      } else {
-          messageEl.textContent = "O's" + " turn"
-      }
-
-  } else if (winner === false && tie === true) {
-      messageEl.textContent = "Yall's Tied"
-  } else {
-      messageEl.textContent = "Winner,Winner, Chicken Dinner!"
-
+  if (messageEl !== null){
+    if (!winner && !tie) {
+      messageEl.textContent = `It's ${turn === 1 ? 'X' : 'O'}'s turn!`
+    } else if (!winner && tie) {
+      messageEl.textContent = "Its a Tie"
+    } else {
+      messageEl.textContent = `Winner! ${turn === 1 ? 'X' : 'O'} wins! `
+    }
   }
-
-
 }
 
+function handleClick(evt: Event) {
+  if (!(evt.target instanceof HTMLElement)) return
+  const sqIdx = parseInt(evt.target.id.replace('sq', ''))
 
-
-
-
-
-function handleClick(evt) {
-  const sqIdx = parseInt(evt.target.id.slice(evt.target.id.length - 1))
-  console.log(evt.target.id[evt.target.id.length - 1])
-  console.log(sqIdx)
-  if (board[sqIdx] || winner === true) {
-      return;
-  }
-
+  if (isNaN(sqIdx) || board[sqIdx] || winner) return
   placePiece(sqIdx)
   checkForTie()
   checkForWinner()
   switchPlayerTurn()
-
   render()
 }
 
-
-function placePiece(index) {
-  board[index] = turn
+function placePiece(idx: number) {
+  board[idx] = turn
 }
 
-
-
 function checkForTie() {
-  for (let i = 0; i < board.length; i++) {
-      if (board[i] === null) {
-          return;
-      }
-  }
+  if (board.includes(0)) return
   tie = true
 }
 
-
 function checkForWinner() {
-  for (let i = 0; i < winningCombos.length; i++) {
-      let total = 0
-      winningCombos[i].forEach(element => {
-          total += board[element]
-      })
-      total = Math.abs(total)
-      if (total === 3) {
-          winner = true
-      }
-  }
+  winningCombos.forEach(combo => {
+    if (Math.abs(board[combo[0]] + board[combo[1]] + board[combo[2]]) === 3) {
+      winner = true
+    }
+  })
 }
+
 
 function switchPlayerTurn() {
-  if (winner === true) {
-      return;
-  }
-
+  if (winner) return
   turn *= -1
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
